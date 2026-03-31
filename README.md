@@ -35,11 +35,11 @@ This repository contains supplementary tables and figures referenced in the auth
 | 7    | 20.43 / 47.07              | 30.37 / 60.96                 | +9.94   |
 | **Mean ± std** | **21.44 ± 1.51 / 49.08 ± 1.94** | **30.27 ± 0.08 / 61.52 ± 0.56** | **+8.83** |
 
+*3-seed evaluation under a single consistent environment. Confidence intervals do not overlap on either dataset.*
+
 ---
 
 ## Table 2: Smooth Mask Ablation
-
-All models trained for 100 epochs with seed 42, using HF-SpectFormer with different frequency mask shapes. τ = 0.5 for all variants.
 
 ### DTD (100 epochs, seed 42)
 
@@ -59,7 +59,7 @@ All models trained for 100 epochs with seed 42, using HF-SpectFormer with differ
 | Cosine (w=0.10) | 81.52% | +0.04 ≈ same |
 | Gaussian (σ=0.15) | 81.60% | +0.12 ≈ same |
 
-On DTD (HF-sensitive textures), Cosine smooth transition performs equivalently to the hard mask, confirming no pathological ringing artifacts. Gaussian masks with wider transition bands degrade performance because the soft rolloff partially exposes HF components to spectral gating, reintroducing the attenuation mechanism diagnosed in Section 3.2. On ImageNet-100 (LF-dominant natural images), all masks perform within 0.12%, confirming no pathological ringing artifacts from the hard cutoff.
+*Comparison of hard threshold vs smooth transition masks.*
 
 ---
 
@@ -72,7 +72,7 @@ On DTD (HF-sensitive textures), Cosine smooth transition performs equivalently t
 | SpectFormer + ReInit (identity) | 19.66 | 2946.7 |
 | GFNet + HF-Skip | 15.62 | 3563.9 |
 
-HF-Skip adds negligible additional parameters (4 learnable scalars, one per spectral block) and is faster than baseline SpectFormer (+23% throughput) because restricting gating to the LF band reduces complex multiplications.
+*Parameter counts and inference throughput for all evaluated model variants.*
 
 ---
 
@@ -85,7 +85,6 @@ HF-Skip adds negligible additional parameters (4 learnable scalars, one per spec
 | Unit magnitude | 27.02% | 83.28% |
 | HF-Skip (multi-seed mean) | 30.27% | 83.76% |
 
-
 ### Gap Analysis
 
 | Metric | DTD | ImageNet-100 |
@@ -93,7 +92,7 @@ HF-Skip adds negligible additional parameters (4 learnable scalars, one per spec
 | Identity closes | 65.7% of gap (4.79/7.29) | 77.1% of gap (1.01/1.31) |
 | HF-Skip still wins by | +2.50% | +0.30% |
 
-Better initialization closes 66–77% of the gap, but HF-Skip still outperforms on both datasets. Optimization re-introduces HF suppression even from favorable initializations.
+*Comparison of gating weight re-initialization strategies vs HF-Skip on both datasets.*
 
 ---
 
@@ -117,7 +116,7 @@ Better initialization closes 66–77% of the gap, but HF-Skip still outperforms 
 | ViT | ~22.94M | 0.1355 | 0.7530 | +1.63% |
 | HF-Skip | ~20.92M | 0.1421 | 0.7605 | +2.29% |
 
-On VOC 2012, HF-Skip surpasses all models including ViT. On Kvasir-SEG, HF-Skip improves over SpectFormer and closes the gap to ViT, which does not suffer from HF collapse as it lacks spectral gating.
+*Segmentation results on Kvasir-SEG (medical) and VOC 2012 (natural images).*
 
 ---
 
@@ -132,7 +131,7 @@ All models trained from scratch on ImageNet-100 for 150 epochs with identical hy
 | SpectFormer (baseline, multi-seed mean) | 82.49% | — |
 | HF-SpectFormer (multi-seed mean) | 83.76% | +1.27 |
 
-HF-Skip generalizes beyond SpectFormer. GFNet benefits even more (+2.46 vs +1.27) because it lacks downstream attention layers to compensate for HF loss.
+*HF-Skip applied to GFNet, a pure spectral architecture without attention layers.*
 
 ---
 
@@ -237,9 +236,7 @@ HF-Skip generalizes beyond SpectFormer. GFNet benefits even more (+2.46 vs +1.27
 | 0.10 | 56.9% | 59.8% | 54.5% | 63.3% | **67.5%** |
 | 0.05 | 35.5% | 38.8% | 32.8% | 44.0% | **50.6%** |
 
-### Summary
-
-HF-Skip improves robustness for corruptions that preserve image structure (noise at mild-moderate levels, frost, brightness, contrast). Under blur corruptions, which destroy HF content by design, SpectFormer's inherent HF suppression becomes accidentally beneficial. Under extreme noise (where all models degrade to 25–35%), SpectFormer's suppression acts as implicit denoising. This pattern is consistent with our thesis: HF-Skip's benefit is proportional to the signal value of the HF content present.
+*Top-1 accuracy (%) on ImageNet-100 under 10 corruption types at 5 severity levels each. Bold indicates best performance per row.*
 
 ---
 
@@ -247,7 +244,7 @@ HF-Skip improves robustness for corruptions that preserve image structure (noise
 
 ![Scale Analysis](scale_spectral_block_comparison.png)
 
-Per-block LF/HF ratios for untrained SpectFormer (top) and HF-SpectFormer (bottom) at Small, Base, and Large scales across three input types. HF collapse persists and worsens at larger scales for SpectFormer. HF-SpectFormer maintains consistent HF preservation across all scales.
+*Per-block LF/HF ratios for untrained SpectFormer (top) and HF-SpectFormer (bottom) at Small, Base, and Large scales across three input types.*
 
 ---
 
@@ -269,4 +266,4 @@ Per-block LF/HF ratios for untrained SpectFormer (top) and HF-SpectFormer (botto
 
 ![Mask Shapes](mask_shapes.png)
 
-LF mask shapes for all five variants. Green = gated (LF), Red = skipped (HF). The Gaussian masks create wide transition zones where mid-frequency components receive partial exposure to both pathways.
+*LF mask shapes for all five variants. Green = gated (LF), Red = skipped (HF).*
