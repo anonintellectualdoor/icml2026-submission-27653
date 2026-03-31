@@ -28,15 +28,20 @@ This repository contains supplementary tables and figures referenced in the auth
 
 ### DTD (100 epochs)
 
-| Model | Test Top-1 (mean ± std) | Test Top-5 (mean ± std) |
-|---|---|---|
-| SpectFormer | 21.44 ± 1.51% | 49.08 ± 1.94% |
-| HF-Skip | 30.27 ± 0.08% | 61.52 ± 0.56% |
-| **Δ** | **+8.83** | **+12.44** |
+| Seed | SpectFormer (Top-1 / Top-5) | HF-SpectFormer (Top-1 / Top-5) | Δ Top-1 |
+|------|----------------------------|-------------------------------|---------|
+| 42   | 23.56 / 51.70              | 30.21 / 62.29                 | +6.65   |
+| 123  | 20.32 / 48.46              | 30.21 / 61.33                 | +9.89   |
+| 7    | 20.43 / 47.07              | 30.37 / 60.96                 | +9.94   |
+| **Mean ± std** | **21.44 ± 1.51 / 49.08 ± 1.94** | **30.27 ± 0.08 / 61.52 ± 0.56** | **+8.83** |
 
 ---
 
-## Table 2: Smooth Mask Ablation (DTD)
+## Table 2: Smooth Mask Ablation
+
+All models trained for 100 epochs with seed 42, using HF-SpectFormer with different frequency mask shapes. τ = 0.5 for all variants.
+
+### DTD (100 epochs, seed 42)
 
 | Mask | Test Top-1 | Δ vs Hard |
 |------|-----------|-----------|
@@ -46,7 +51,15 @@ This repository contains supplementary tables and figures referenced in the auth
 | Gaussian medium (σ=0.10) | 26.33% | −3.88 |
 | Gaussian wide (σ=0.20) | 26.86% | −3.35 |
 
-Cosine smooth transition performs equivalently to the hard mask, confirming no pathological ringing artifacts. Gaussian masks with wider transition bands degrade performance because the soft rolloff partially exposes HF components to spectral gating, reintroducing the attenuation mechanism diagnosed in Section 3.2.
+### ImageNet-100 (100 epochs, seed 42)
+
+| Mask | Val Top-1 | Δ vs Hard |
+|------|-----------|-----------|
+| Hard (paper default) | 81.48% | baseline |
+| Cosine (w=0.10) | 81.52% | +0.04 ≈ same |
+| Gaussian (σ=0.15) | 81.60% | +0.12 ≈ same |
+
+On DTD (HF-sensitive textures), Cosine smooth transition performs equivalently to the hard mask, confirming no pathological ringing artifacts. Gaussian masks with wider transition bands degrade performance because the soft rolloff partially exposes HF components to spectral gating, reintroducing the attenuation mechanism diagnosed in Section 3.2. On ImageNet-100 (LF-dominant natural images), all masks perform within 0.12%, confirming no pathological ringing artifacts from the hard cutoff.
 
 ---
 
@@ -59,7 +72,7 @@ Cosine smooth transition performs equivalently to the hard mask, confirming no p
 | SpectFormer + ReInit (identity) | 19.66 | 2946.7 |
 | GFNet + HF-Skip | 15.62 | 3563.9 |
 
-HF-Skip adds zero parameters and is faster than baseline SpectFormer (+23% throughput) because restricting gating to the LF band reduces complex multiplications.
+HF-Skip adds negligible additional parameters (4 learnable scalars, one per spectral block) and is faster than baseline SpectFormer (+23% throughput) because restricting gating to the LF band reduces complex multiplications.
 
 ---
 
@@ -72,14 +85,15 @@ HF-Skip adds zero parameters and is faster than baseline SpectFormer (+23% throu
 | Unit magnitude | 27.02% | 83.28% |
 | HF-Skip (multi-seed mean) | 30.27% | 83.76% |
 
+
 ### Gap Analysis
 
 | Metric | DTD | ImageNet-100 |
 |--------|-----|-------------|
-| Identity closes | 73% of gap (4.79/6.60) | 79% of gap (1.01/1.27) |
+| Identity closes | 65.7% of gap (4.79/7.29) | 77.1% of gap (1.01/1.31) |
 | HF-Skip still wins by | +2.50% | +0.30% |
 
-Better initialization closes 73–79% of the gap, but HF-Skip still outperforms on both datasets. Optimization re-introduces HF suppression even from favorable initializations.
+Better initialization closes 66–77% of the gap, but HF-Skip still outperforms on both datasets. Optimization re-introduces HF suppression even from favorable initializations.
 
 ---
 
@@ -87,27 +101,29 @@ Better initialization closes 73–79% of the gap, but HF-Skip still outperforms 
 
 ### Kvasir-SEG (Medical Polyp Segmentation)
 
-| Model | Encoder Params | Total Params | Dice | IoU |
-|-------|---------------|-------------|------|-----|
-| GFNet | 16.87M | ~18.1M | 0.6801 | 0.5589 |
-| SpectFormer | 20.92M | ~22.1M | 0.7225 | 0.6186 |
-| HF-Skip | 20.92M | ~22.1M | 0.7385 | 0.6256 |
-| ViT | 22.94M | ~24.1M | 0.7526 | 0.6428 |
+| Model | Total Params | Dice | IoU |
+|-------|-------------|------|-----|
+| GFNet | ~16.87M | 0.6801 | 0.5589 |
+| SpectFormer | ~20.92M | 0.7225 | 0.6186 |
+| HF-Skip | ~20.92M | 0.7385 | 0.6256 |
+| ViT | ~22.94M | 0.7526 | 0.6428 |
 
 ### VOC 2012 Segmentation
 
 | Model | Params | mIoU | Pixel Acc | Δ mIoU vs SpectFormer |
 |-------|--------|------|-----------|----------------------|
-| GFNet | ~18.1M | 0.0998 | 0.7345 | −1.94% |
-| SpectFormer | ~22.1M | 0.1192 | 0.7458 | — |
-| ViT | ~24.1M | 0.1355 | 0.7530 | +1.63% |
-| HF-Skip | ~22.1M | 0.1421 | 0.7605 | +2.29% |
+| GFNet | ~16.87M | 0.0998 | 0.7345 | −1.94% |
+| SpectFormer | ~20.92M | 0.1192 | 0.7458 | — |
+| ViT | ~22.94M | 0.1355 | 0.7530 | +1.63% |
+| HF-Skip | ~20.92M | 0.1421 | 0.7605 | +2.29% |
 
 On VOC 2012, HF-Skip surpasses all models including ViT. On Kvasir-SEG, HF-Skip improves over SpectFormer and closes the gap to ViT, which does not suffer from HF collapse as it lacks spectral gating.
 
 ---
 
 ## Table 6: Cross-Architecture Validation — GFNet + HF-Skip
+
+All models trained from scratch on ImageNet-100 for 150 epochs with identical hyperparameters.
 
 | Model | ImageNet-100 Top-1 | Δ vs baseline |
 |-------|-------------------|---------------|
@@ -128,7 +144,7 @@ HF-Skip generalizes beyond SpectFormer. GFNet benefits even more (+2.46 vs +1.27
 |---|------------|---------|-----|-------|-------------|
 | 0.08 | 75.1% | **77.0%** | 69.7% | 74.9% | 76.8% |
 | 0.12 | 71.2% | **73.1%** | 64.9% | 70.8% | 73.5% |
-| 0.18 | 63.9% | **65.1%** | 55.3% | 64.7% | 66.7% |
+| 0.18 | 63.9% | 65.1% | 55.3% | 64.7% | **66.7%** |
 | 0.26 | 51.2% | 50.2% | 40.5% | **53.0%** | 51.0% |
 | 0.38 | 30.2% | 25.9% | 19.5% | **33.0%** | 26.1% |
 
@@ -166,11 +182,11 @@ HF-Skip generalizes beyond SpectFormer. GFNet benefits even more (+2.46 vs +1.27
 
 | r | SpectFormer | HF-Skip | ViT | GFNet | GFNet+HFSkip |
 |---|------------|---------|-----|-------|-------------|
-| 3 | **47.6%** | 46.3% | 41.1% | 50.2% | 47.3% |
+| 3 | 47.6% | 46.3% | 41.1% | **50.2%** | 47.3% |
 | 5 | **27.7%** | 26.2% | 23.3% | 27.6% | 23.5% |
 | 7 | **21.5%** | 21.0% | 18.7% | **21.5%** | 17.3% |
 | 8 | 14.9% | **15.3%** | 13.0% | 14.0% | 10.9% |
-| 10 | **10.9%** | 11.2% | 9.8% | 9.6% | 7.5% |
+| 10 | 10.9% | **11.2%** | 9.8% | 9.6% | 7.5% |
 
 ### Zoom Blur (zoom factor z)
 
@@ -190,7 +206,6 @@ HF-Skip generalizes beyond SpectFormer. GFNet benefits even more (+2.46 vs +1.27
 | μ=0.2, σ=0.3, α=0.5 | 66.7% | 68.0% | 61.7% | 68.7% | **70.0%** |
 | μ=0.55, σ=0.3, α=0.9 | 35.1% | 33.1% | 28.0% | **41.0%** | 39.0% |
 | μ=0.55, σ=0.3, α=0.85 | 38.4% | 36.8% | 30.8% | **43.5%** | 42.4% |
-| μ=0.55, σ=0.3, α=0.85 | 39.1% | 37.0% | 31.4% | **44.2%** | 42.3% |
 
 ### Frost (image blend α, frost blend β)
 
