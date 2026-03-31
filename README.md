@@ -253,9 +253,15 @@ Per-block LF/HF ratios for untrained SpectFormer (top) and HF-SpectFormer (botto
 
 ## Figure 2: Feature Map Visualizations
 
-![Feature Maps](feature_maps.png)
+![Feature Maps](feature_maps_imgnet.png)
+![Feature Maps](feature_maps_imgnet_block1.png)
 
-Feature maps at Block 0 output for different mask types on a DTD texture image. The hard mask and cosine mask show preserved fine structure with no ringing artifacts. Gaussian masks show visible loss of detail due to partial HF exposure to spectral gating.
+*Feature maps for different mask types on a ImageNet-100 image.*
+
+![Feature Maps](feature_maps.png)
+![Feature Maps](feature_maps_block1.png)
+
+*Feature maps for different mask types on a DTD texture image.*
 
 ---
 
