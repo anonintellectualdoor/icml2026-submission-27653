@@ -240,6 +240,46 @@ All models trained from scratch on ImageNet-100 for 150 epochs with identical hy
 
 ---
 
+## Table 8: FLOPs Comparison
+
+### Model-Level Summary
+
+| Model | Params | GFLOPs | MFLOPs | Δ vs SpectFormer | Δ MFLOPs |
+|-------|--------|--------|--------|-------------------|----------|
+| SpectFormer | 19.68M | 7.5920 | 7591.96 | baseline | — |
+| HF-SpectFormer | 19.68M | 7.5926 | 7592.65 | +0.009% | +0.69M |
+| ViT | 21.70M | 8.4904 | 8490.44 | +11.835% | +898.48M |
+| GFNet | 15.64M | 5.7950 | 5795.00 | −23.669% | −1796.96M |
+
+### Per-Operation Breakdown (SpectFormer vs HF-SpectFormer)
+
+| Operation | SpectFormer (M) | HF-SpectFormer (M) | Δ MFLOPs | Δ % |
+|-----------|----------------|--------------------|---------|----|
+| conv | 115.68 | 115.68 | 0 | 0% |
+| elementwise_add | 1.58 | 1.75 | +0.17 | +10.88% |
+| elementwise_mul | 2.02 | 2.53 | +0.52 | +25.60% |
+| fft_irfft2 | 9.96 | 9.96 | 0 | 0% |
+| fft_rfft2 | 18.65 | 18.65 | 0 | 0% |
+| gelu | 28.90 | 28.90 | 0 | 0% |
+| layernorm | 9.41 | 9.41 | 0 | 0% |
+| linear | 7405.75 | 7405.75 | 0 | 0% |
+| sigmoid | 0.00 | 0.00 | +0.00 | new |
+| **Total** | **7591.96** | **7592.65** | **+0.69** | **+0.009%** |
+
+### Source of Overhead
+
+| Op | SpectFormer | HF-SpectFormer | Diff | Expected |
+|----|------------|----------------|------|----------|
+| fft_rfft2 | 18.65M | 18.65M | 0 | Both 4 calls |
+| fft_irfft2 | 9.96M | 9.96M | 0 | Both 4 calls |
+| elementwise_mul | 2.02M | 2.53M | +0.52M | HF-Skip has 4×(4 muls) vs 4×(1 mul) = 12 extra muls, but on smaller tensors (masks are sparse) |
+| elementwise_add | 1.58M | 1.75M | +0.17M | 4 extra x_lf + x_hf combines |
+| sigmoid | 0 | ~0 | ~0 | 4 scalar sigmoid calls |
+
+*HF-Skip adds +0.69 MFLOPs (+0.009%) over baseline SpectFormer. All overhead arises from frequency masking and path recombination.*
+
+---
+
 ## Figure 1: HF Collapse Across Scales (Untrained Models)
 
 ![Scale Analysis](scale_spectral_block_comparison.png)
