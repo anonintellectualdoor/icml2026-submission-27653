@@ -319,3 +319,5 @@ All models trained from scratch on ImageNet-100 for 150 epochs with identical hy
 ![GFNet Ratios](GFNet_LF_HF_Ratios.png)
 
 *(b) Mean LF/HF ratio across spectral blocks over training on DTD (GFNet, Small scale).*
+
+*Note: The x-axis label shows "Step" but corresponds to training epochs (1 step = 1 epoch).*
