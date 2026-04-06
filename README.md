@@ -240,7 +240,7 @@ All models trained from scratch on ImageNet-100 for 150 epochs with identical hy
 
 ---
 
-## Table 8: FLOPs Comparison
+## Table 8: FLOPs Comparison (Small Scale, 224×224 input)
 
 ### Model-Level Summary
 
