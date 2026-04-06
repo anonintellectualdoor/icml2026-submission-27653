@@ -310,7 +310,7 @@ All models trained from scratch on ImageNet-100 for 150 epochs with identical hy
 
 ---
 
-## Figure 4: Training Trajectory of LF/HF Ratio
+## Figure 4: Training Trajectory of LF/HF Ratio (DTD)
 
 ![SF Ratios](SF_LF_HF_Ratios.png)
 
@@ -319,5 +319,23 @@ All models trained from scratch on ImageNet-100 for 150 epochs with identical hy
 ![GFNet Ratios](GFNet_LF_HF_Ratios.png)
 
 *(b) Mean LF/HF ratio across spectral blocks over training on DTD (GFNet, Small scale).*
+
+*Note: The x-axis label shows "Step" but corresponds to training epochs (1 step = 1 epoch).*
+
+---
+
+## Figure 5: Training Trajectory of LF/HF Ratio (ImageNet-100)
+
+![SF_Small_Ratios](Small_SF_Imagenet_ratio.png)
+
+*(a) SpectFormer Small (22M params, 150 epochs).*
+
+![SF_Base_Ratios](Base_SF_Imagenet_ratio.png)
+
+*(b) SpectFormer Base (77M params, 130 epochs).*
+
+![SF_Large_Ratios](Large_SF_Imagenet_ratio.png)
+
+*(c) SpectFormer Large (153M params, 70 epochs).*
 
 *Note: The x-axis label shows "Step" but corresponds to training epochs (1 step = 1 epoch).*
