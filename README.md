@@ -307,3 +307,15 @@ All models trained from scratch on ImageNet-100 for 150 epochs with identical hy
 ![Mask Shapes](mask_shapes.png)
 
 *LF mask shapes for all five variants. Green = gated (LF), Red = skipped (HF).*
+
+---
+
+## Figure 4: Training Trajectory of LF/HF Ratio
+
+![SF Ratios](SF_LF_HF_Ratios.png)
+
+*(a) Mean LF/HF ratio across spectral blocks over training on DTD (SpectFormer, Small scale).*
+
+![GFNet Ratios](GFNet_LF_HF_Ratios.png)
+
+*(b) Mean LF/HF ratio across spectral blocks over training on DTD (GFNet, Small scale).*
